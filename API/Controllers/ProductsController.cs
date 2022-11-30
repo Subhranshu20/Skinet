@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Dtos;
 using API.Errors;
+using API.Helpers;
 using AutoMapper;
 using core.Entities;
 using core.Interfaces;
@@ -40,12 +41,18 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public  async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts()
+        public  async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts(
+                [FromQuery]ProductSpecParams prodParams )
         {
-            var spec = new ProductsWithTypesAndBrandsSpecification();
+            var spec = new ProductsWithTypesAndBrandsSpecification(prodParams);
+
+            var countSpec = new ProductWithFiltersForCounterSprecification(prodParams);
+            var totalItems = await _productrepo.CountAsync(countSpec);
             var products = await _productrepo.ListAsync(spec);
-            return Ok(_mapper
-                .Map<IReadOnlyList<Product>,IReadOnlyList<ProductToReturnDto>>(products));
+            var data = _mapper
+                .Map<IReadOnlyList<Product>,IReadOnlyList<ProductToReturnDto>>(products);
+
+            return Ok(new Pagination<ProductToReturnDto>(prodParams.PageIndex,prodParams.PageSize,totalItems,data));
             // return products.Select(product=> new ProductToReturnDto{
             //     Id=product.Id,
             //     Name=product.Name,
@@ -68,17 +75,7 @@ namespace API.Controllers
                 return NotFound(new ApiResponse(404));
              }
              return _mapper.Map<Product,ProductToReturnDto>(product);
-            //  return new ProductToReturnDto{
-            //     Id=product.Id,
-            //     Name=product.Name,
-            //     Description=product.Description,
-            //     PictureUrl=product.PictureUrl,
-            //     Price=product.Price,
-            //     ProductBrand=product.ProductBrand.Name,
-            //     ProductType=product.ProductType.Name            
-
-            //  };
-             
+                         
         }
 
         [HttpGet("types")]
