@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using API.Dtos;
 using API.Errors;
 using API.Helpers;
@@ -9,12 +6,14 @@ using AutoMapper;
 using core.Entities;
 using core.Interfaces;
 using core.Specification;
-using infrastructure.Data;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace API.Controllers
 {
+    //[EnableCors("CorsPolicy")]
+    //[EnableCors("https://localhost:7240", headers: "*", methods: "*")]
     
     public class ProductsController : BaseApiController
     {
