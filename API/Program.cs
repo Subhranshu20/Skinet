@@ -2,7 +2,10 @@
 using API.Extensions;
 using API.Helpers;
 using API.Middleware;
+using core.Entities.Identity;
 using infrastructure.Data;
+using infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
@@ -14,11 +17,14 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices();
+builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddSwaggerDocumentation();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionStringIdentity = builder.Configuration.GetConnectionString("IdentityConnection");
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddDbContext<StoreContext>(x=> x.UseSqlite(connectionString));
+builder.Services.AddDbContext<AppIdentityDbContext>(x=> x.UseSqlite(connectionStringIdentity));
 builder.Services.AddSingleton<IConnectionMultiplexer>(c=> {
     var configuration=ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("Redis"),true);
     return ConnectionMultiplexer.Connect(configuration);
@@ -48,16 +54,22 @@ app.UseStatusCodePagesWithReExecute("/errors/{0}");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCors("AllowOrigin");
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 using var scope = app.Services.CreateScope();
 var services =scope.ServiceProvider;
 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+var context = services.GetRequiredService<StoreContext>();
+var identityContext = services.GetRequiredService<AppIdentityDbContext>();
+var userManager = services.GetRequiredService<UserManager<AppUser>>();
 try{
-    var context = services.GetRequiredService<StoreContext>();
+    
     await context.Database.MigrateAsync();
+    await identityContext.Database.MigrateAsync();
     await StoreContextSeed.SeedAsync(context, loggerFactory);    
+    await AppIdentityDbContextSeed.SeedUserAsync(userManager); 
 }
 catch(Exception ex)
 {

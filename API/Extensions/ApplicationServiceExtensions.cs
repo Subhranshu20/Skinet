@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Errors;
 using core.Interfaces;
 using infrastructure.Data;
+using infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Extensions
@@ -14,6 +15,7 @@ namespace API.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services){
             services.AddScoped<IProductRepository,ProductRepository>();
             services.AddScoped<IBasketRepository,BasketRepository>();
+            services.AddScoped<ITokenService,TokenService>();
             services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
             services.Configure<ApiBehaviorOptions>( options=>
                 options.InvalidModelStateResponseFactory = actionContext =>
@@ -24,7 +26,7 @@ namespace API.Extensions
                                     .Select(x=> x.ErrorMessage).ToArray();
                     var errorResponse = new ApiValidationErrorResponse
                     {
-                        Erros = errors
+                        Errors = errors
                     };
                     return new BadRequestObjectResult(errorResponse);
                 });

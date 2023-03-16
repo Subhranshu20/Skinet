@@ -5,10 +5,19 @@ import { BusyService } from '../services/busy.service';
 
 @Injectable()
 export class LoadingInterceptor implements HttpInterceptor {
+
     constructor(private busyService: BusyService){}
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        if (
+            request.url.includes('emailExists') ||
+            request.method === 'POST' && request.url.includes('orders') ||
+            request.method === 'DELETE'
+          ) {
+            return next.handle(request);
+          }
         this.busyService.busy();
-        return next.handle(req).pipe(
+        return next.handle(request).pipe(
             delay(1000),
             finalize(()=> {
                 this.busyService.idle();

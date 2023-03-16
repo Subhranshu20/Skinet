@@ -11,6 +11,6 @@ namespace API.Errors
         {
             
         }
-        public IEnumerable<string> Erros { get; set; }
+        public IEnumerable<string> Errors { get; set; }
     }
 }

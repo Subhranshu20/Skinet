@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Errors;
 using infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -42,6 +43,12 @@ namespace API.Controllers
         public ActionResult GetBadRequest(int id)
         {
             return Ok();
+        }
+        [HttpGet("testAuth")]
+        [Authorize]
+        public ActionResult<string> GetSecretText()
+        {
+            return "secret stuff";
         }
     }
 }
