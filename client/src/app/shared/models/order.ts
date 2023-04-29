@@ -6,23 +6,24 @@ export interface OrderToCreate{
 }
 
 export interface Order {
-    buyerEmail: string
-    orderDate: string
-    deliveryMethod: string
-    shipToAddress: Address
-    shippingPrice: number
-    orderItems: OrderItem[]
-    subTotal: number
-    total: number
-    status: string
+    id:number;
+    buyerEmail: string;
+    orderDate: string;
+    deliveryMethod: string;
+    shipToAddress: Address;
+    shippingPrice: number;
+    orderItems: OrderItem[];
+    subTotal: number;
+    total: number;
+    status: string;
   }
   
 
   
   export interface OrderItem {
-    productId: number
-    productName: string
-    pictureUrl: string
-    price: number
-    quantity: number
+    productId: number;
+    productName: string;
+    pictureUrl: string;
+    price: number;
+    quantity: number;
   }

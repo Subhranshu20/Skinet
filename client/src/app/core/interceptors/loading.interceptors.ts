@@ -9,8 +9,7 @@ export class LoadingInterceptor implements HttpInterceptor {
     constructor(private busyService: BusyService){}
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (
-            request.url.includes('emailExists') ||
+        if (request.url.includes('emailExists') ||
             request.method === 'POST' && request.url.includes('orders') ||
             request.method === 'DELETE'
           ) {

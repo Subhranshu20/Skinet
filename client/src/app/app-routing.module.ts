@@ -8,6 +8,13 @@ import { HomeComponent } from './home/home.component';
 
 
 const routes: Routes = [
+  {
+    path: 'orders',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./orders/orders.module').then(mod => mod.OrdersModule),
+    data: { breadcrumb: 'Orders' }
+    },
+    
   {path:'',component: HomeComponent,data: {breadcrumb: 'Home'}},
   {path:'test-error',component: TestErrorComponent},
   {path:'server-error',component: ServerErrorComponent},

@@ -13,6 +13,7 @@ namespace API.Extensions
     public static class ApplicationServiceExtensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services){
+            services.AddScoped<IPaymentService,PaymentService>();
             services.AddScoped<IProductRepository,ProductRepository>();
             services.AddScoped<IBasketRepository,BasketRepository>();
             services.AddScoped<IUnitOfWork,UnitOfWork>();
